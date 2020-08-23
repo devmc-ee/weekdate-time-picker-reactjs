@@ -18,11 +18,10 @@ const Calendar = React.memo(() => {
 	moment.locale(locale);
 	const [calendarDate, setCalendarDate] = useState(moment().date());
 	const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
-	const [expanded, setExpanded] = useState('panel0');
-
+	const [expanded, setExpanded] = useState('panel0');//accordion
 
 	let calendarDays = [];
-	let disabledDay, selectedDay;
+	let isDisabledDay, isSelectedDay, isSelectedDisabledDay;
 	const servicesTotalLength = getTotalDuration(services);
 	const timeSlots = getTimeSlots(
 		selectedDate,
@@ -33,20 +32,23 @@ const Calendar = React.memo(() => {
 
 	//generate calendar days with properties
 	for (let i = calendarDate; i < calendarDate + 7; i++) {
-		disabledDay = (Math.abs(moment().date() - i + 1) >= maxAvailableDays);
-		disabledDay = disabledDay || disabledWeekDays.includes(moment().date(i).day());
+		isDisabledDay = (Math.abs(moment().date() - i + 1) >= maxAvailableDays);
+		isDisabledDay = isDisabledDay || disabledWeekDays.includes(moment().date(i).day());
 
-		selectedDay = moment(moment().date(i).format('YYYY-MM-DD')).isSame(moment(selectedDate));
-		if (selectedDay) {
-			disabledDay = disabledDay || timeSlots.length === 0;
+		isSelectedDay = moment(moment().date(i).format('YYYY-MM-DD')).isSame(moment(selectedDate));
+		if (isSelectedDay) {
+			isSelectedDisabledDay = isDisabledDay = isDisabledDay || timeSlots.length === 0;
+		}
+		if (isSelectedDisabledDay) {
+			setSelectedDate(moment(selectedDate).add(1, 'd').format('YYYY-MM-DD'));
 		}
 
 		calendarDays.push({
 			weekday: moment().date(i).format('ddd'),
 			date: moment().date(i).format('D'),
 			fullDate: moment().date(i).format('YYYY-MM-DD'),
-			disabled: disabledDay,
-			selected: selectedDay
+			disabled: isDisabledDay,
+			selected: isSelectedDay
 		})
 
 	}
@@ -61,18 +63,18 @@ const Calendar = React.memo(() => {
 			setCalendarDate(prevDate => prevDate - 7);
 
 	};
-	const handleSelect = date => event => {
+	const handleSelect = date => () => {
 		const appointment = {
 			appointment: {
 				date: date,
 				time: ''
 			}
-		}
+		};
 		setSelectedDate(date);
-		context.setValues({...context.values, ...appointment})
+		context.setValues({...context.values, ...appointment});
 		setExpanded('panel0');
 
-	}
+	};
 
 	return (
 		<>
@@ -81,7 +83,7 @@ const Calendar = React.memo(() => {
 			</div>
 			<div className="calendar-week">
 				<IconButton
-					className="calendar-btn-left" disabled={calendarDate === moment().date() ? true : false}
+					className="calendar-btn-left" disabled={calendarDate === moment().date()}
 					onClick={handleLeftClick}><ChevronLeft/></IconButton>
 				<div className="calendar-weekdays">
 
@@ -105,13 +107,16 @@ const Calendar = React.memo(() => {
 				</div>
 
 				<IconButton
-					className="calendar-btn-right" disabled={calendarDate > maxAvailableDays ? true : false}
+					className="calendar-btn-right" disabled={calendarDate > maxAvailableDays}
 					onClick={handleRightClick}><ChevronRight/></IconButton>
 			</div>
 			<div className="calendar-available-times">
-				<TimePicker
-					selectedDate={selectedDate} expanded={expanded} setExpanded={setExpanded}
-					groupedTimeSlots={groupedTimeSlots}/>
+				{isSelectedDisabledDay
+					? 'There is no available times on this date'
+					: <TimePicker
+						selectedDate={selectedDate} expanded={expanded} setExpanded={setExpanded}
+						groupedTimeSlots={groupedTimeSlots}/>
+				}
 			</div>
 
 

@@ -8,22 +8,20 @@ import moment from 'moment';
 const TimePicker = ({selectedDate, expanded, setExpanded, groupedTimeSlots}) => {
 
 	const mSelectedDate = moment(selectedDate);
-
 	mSelectedDate.locale(CALENDAR_SETTINGS.locale);
-
 	const context = useFormikContext();
-	//const services = context.values.services || [];
+
 	const time = context.values.appointment ? context.values.appointment.time : '';
 
-	const handleClick = slot => event => {
+	const handleClick = slot => () => {
 		const appointment = {
 			appointment: {
 				date: selectedDate,
 				time: slot
 			}
-		}
+		};
 		context.setValues({...context.values, ...appointment})
-	}
+	};
 
 	const availableTimeSlots = timeSlots => {
 		return (
@@ -39,10 +37,10 @@ const TimePicker = ({selectedDate, expanded, setExpanded, groupedTimeSlots}) => 
 			)
 		)
 
-	}
+	};
 	const handleExpand = (panel) => (event , newExpanded)=> {
 		setExpanded(newExpanded? panel : false)
-	}
+	};
 	return (
 		<>
 
