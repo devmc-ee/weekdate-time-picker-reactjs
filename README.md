@@ -42,6 +42,7 @@ Available settings:
 
 Visual icons and components, like an accordion, are taken from [Material-Ui](https://material-ui.com/) library
 
+![WeekDateTimePicker sample view](WeekDateTimePickerReactJs.gif "Weekdate Time Picker, Reactjs")
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Start
