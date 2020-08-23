@@ -4,6 +4,7 @@ import WeekDateTimePicker from './components/WeekDateTimePicker'
 import './App.css';
 
 function App() {
+
 	return (
 		<div className="App">
 			<Formik initialValues={{appointment: ''}} onSubmit={() => console.log('Submit')}>
@@ -14,6 +15,7 @@ function App() {
 					</Form>
 				)}
 			</Formik>
+
 		</div>
 	);
 }

@@ -15,6 +15,7 @@ const Calendar = React.memo(() => {
 	const context = useFormikContext();
 	const services = context.values.services || [];
 	const {maxAvailableDays, disabledWeekDays, locale} = CALENDAR_SETTINGS;
+
 	moment.locale(locale);
 	const [calendarDate, setCalendarDate] = useState(moment().date());
 	const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
@@ -29,6 +30,14 @@ const Calendar = React.memo(() => {
 		servicesTotalLength,
 		CALENDAR_SETTINGS);
 	const groupedTimeSlots = groupTimeSlots(timeSlots, CALENDAR_SETTINGS.timeSlotGroups);
+	groupedTimeSlots.map((group, i) => {
+		const expandedPanelNum = parseInt(expanded.substr(5));
+		if (group.length === 0 && expandedPanelNum === i && i <= groupedTimeSlots.length) {
+			//open next not empty group of timeslots
+			return setExpanded(() => 'panel' + (expandedPanelNum + 1));
+		}
+		return false;
+	});
 
 	//generate calendar days with properties
 	for (let i = calendarDate; i < calendarDate + 7; i++) {

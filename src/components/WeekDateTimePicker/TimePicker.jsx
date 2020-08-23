@@ -5,12 +5,10 @@ import {Accordion, AccordionDetails, AccordionSummary, Button} from '@material-u
 import {ExpandMore} from "@material-ui/icons";
 import moment from 'moment';
 
-const TimePicker = ({selectedDate, expanded, setExpanded, groupedTimeSlots}) => {
-
+const TimePicker = ({selectedDate, expanded, setExpanded, groupedTimeSlots} )=> {
+	const context = useFormikContext();
 	const mSelectedDate = moment(selectedDate);
 	mSelectedDate.locale(CALENDAR_SETTINGS.locale);
-	const context = useFormikContext();
-
 	const time = context.values.appointment ? context.values.appointment.time : '';
 
 	const handleClick = slot => () => {
@@ -45,7 +43,9 @@ const TimePicker = ({selectedDate, expanded, setExpanded, groupedTimeSlots}) => 
 		<>
 
 			{groupedTimeSlots.map((group, i) => (
+
 				<Accordion
+
 					key={i}
 					className="calendar-accordion-item"
 					expanded={expanded === `panel${i}` && group.length > 0}
