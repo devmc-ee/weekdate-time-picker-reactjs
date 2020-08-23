@@ -111,7 +111,7 @@ export const SERVICE_PRICES = {
 
 export const CALENDAR_SETTINGS = {
 	maxAvailableDays: 30,
-	disabledWeekDays: [0, 1],
+	disabledWeekDays: [ 1],
 	workingTime: {
 		start: '11:00',
 		end: '21:00'

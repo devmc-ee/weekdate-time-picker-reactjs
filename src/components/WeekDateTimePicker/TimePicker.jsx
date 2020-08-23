@@ -38,8 +38,8 @@ const TimePicker = ({selectedDate, expanded, setExpanded, groupedTimeSlots}) => 
 		)
 
 	};
-	const handleExpand = (panel) => (event , newExpanded)=> {
-		setExpanded(newExpanded? panel : false)
+	const handleExpand = (panel) => (event, newExpanded) => {
+		setExpanded(newExpanded ? panel : false)
 	};
 	return (
 		<>
@@ -48,7 +48,7 @@ const TimePicker = ({selectedDate, expanded, setExpanded, groupedTimeSlots}) => 
 				<Accordion
 					key={i}
 					className="calendar-accordion-item"
-					expanded={expanded===`panel${i}` && group.length>0  }
+					expanded={expanded === `panel${i}` && group.length > 0}
 					onChange={handleExpand(`panel${i}`)}
 					disabled={group.length <= 0}>
 

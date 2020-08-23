@@ -40,6 +40,9 @@ Available settings:
 };
 ```
 
+The last available timeslots are defined by the duration of the selected services. In other words, the last 
+available time is the end of the working time - serviceDuration. 
+
 Visual icons and components, like an accordion, are taken from [Material-Ui](https://material-ui.com/) library
 
 ![WeekDateTimePicker sample view](WeekDateTimePickerReactJs.gif "Weekdate Time Picker, Reactjs")
