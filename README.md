@@ -44,6 +44,17 @@ Visual icons and components, like an accordion, are taken from [Material-Ui](htt
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Start
+
+Clone the repository
+```
+git clone https://github.com/devmc-ee/weekdate-time-picker-reactjs.git
+
+```
+
+Install all dependencies
+### `yarn intall`
+
 ## Available Scripts
 
 In the project directory, you can run:
