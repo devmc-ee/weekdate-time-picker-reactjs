@@ -127,10 +127,11 @@ export const CALENDAR_SETTINGS = {
 
 		{
 			start: '16:00',
-			end: '21:00'
+			end: '20:00'
 		}],
 	locale: 'en',
-	timeZone: 'Europe/Tallinn'
+	timeZone: 'Europe/Tallinn',
+	disabledDates: ['2020-08-29']
 
 };
 

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import moment from 'moment';
 import {ChevronLeft, ChevronRight} from '@material-ui/icons';
 import {IconButton, Button} from "@material-ui/core";
@@ -20,8 +20,10 @@ const Calendar = React.memo(() => {
 	const [calendarDate, setCalendarDate] = useState(moment().date());
 	const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
 	const [expanded, setExpanded] = useState('panel0');//accordion
+	const disabledDates = useRef(CALENDAR_SETTINGS.disabledDates);
 
 	let calendarDays = [];
+	let emptyTimeSlotGroups = [];
 	let isDisabledDay, isSelectedDay, isSelectedDisabledDay;
 	const servicesTotalLength = getTotalDuration(services);
 	const timeSlots = getTimeSlots(
@@ -30,48 +32,58 @@ const Calendar = React.memo(() => {
 		servicesTotalLength,
 		CALENDAR_SETTINGS);
 	const groupedTimeSlots = groupTimeSlots(timeSlots, CALENDAR_SETTINGS.timeSlotGroups);
+
 	groupedTimeSlots.map((group, i) => {
 		const expandedPanelNum = parseInt(expanded.substr(5));
+		if (group.length === 0) {
+			emptyTimeSlotGroups.push(i);
+		}
 		if (group.length === 0 && expandedPanelNum === i && i <= groupedTimeSlots.length) {
-			//open next not empty group of timeslots
+			//expand next not empty group of timeslots
 			return setExpanded(() => 'panel' + (expandedPanelNum + 1));
 		}
 		return false;
 	});
 
+	if (!disabledDates.current.includes(selectedDate)
+		&& emptyTimeSlotGroups.length === CALENDAR_SETTINGS.timeSlotGroups.length) {
+		disabledDates.current = [...disabledDates.current, selectedDate];
+	}
+
 	//generate calendar days with properties
 	for (let i = calendarDate; i < calendarDate + 7; i++) {
 		isDisabledDay = (Math.abs(moment().date() - i + 1) >= maxAvailableDays);
 		isDisabledDay = isDisabledDay || disabledWeekDays.includes(moment().date(i).day());
+		isDisabledDay = isDisabledDay || disabledDates.current.includes(moment().date(i).format('YYYY-MM-DD'));
 
 		isSelectedDay = moment(moment().date(i).format('YYYY-MM-DD')).isSame(moment(selectedDate));
+		isDisabledDay = isDisabledDay || emptyTimeSlotGroups.length === groupedTimeSlots.length;
 		if (isSelectedDay) {
 			isSelectedDisabledDay = isDisabledDay = isDisabledDay || timeSlots.length === 0;
 		}
 		if (isSelectedDisabledDay) {
 			setSelectedDate(moment(selectedDate).add(1, 'd').format('YYYY-MM-DD'));
+			setExpanded(() => 'panel' + 0);
 		}
-
 		calendarDays.push({
 			weekday: moment().date(i).format('ddd'),
 			date: moment().date(i).format('D'),
 			fullDate: moment().date(i).format('YYYY-MM-DD'),
 			disabled: isDisabledDay,
 			selected: isSelectedDay
-		})
-
+		});
 	}
 
 	const handleRightClick = () => {
 		if (maxAvailableDays > calendarDate)
 			setCalendarDate(prevDate => prevDate + 7);
-
 	};
+
 	const handleLeftClick = () => {
 		if (moment().date() < calendarDate)
 			setCalendarDate(prevDate => prevDate - 7);
-
 	};
+
 	const handleSelect = date => () => {
 		const appointment = {
 			appointment: {
@@ -82,7 +94,6 @@ const Calendar = React.memo(() => {
 		setSelectedDate(date);
 		context.setValues({...context.values, ...appointment});
 		setExpanded('panel0');
-
 	};
 
 	return (
@@ -110,7 +121,6 @@ const Calendar = React.memo(() => {
 										disabled={day.disabled}>{day.date}</Button>
 								</div>
 							</div>
-
 						)
 					)}
 				</div>
@@ -127,8 +137,6 @@ const Calendar = React.memo(() => {
 						groupedTimeSlots={groupedTimeSlots}/>
 				}
 			</div>
-
-
 		</>
 	)
 });

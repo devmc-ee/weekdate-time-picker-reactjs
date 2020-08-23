@@ -35,7 +35,8 @@ Available settings:
 			end: '21:00'
 		}],
 	locale: 'en',           // translation
-	timeZone: 'Europe/Tallinn' 
+	timeZone: 'Europe/Tallinn',
+    disabledDates: ['2020-08-29']
 
 };
 ```
