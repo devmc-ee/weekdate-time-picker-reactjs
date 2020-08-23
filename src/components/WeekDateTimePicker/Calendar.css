@@ -1,0 +1,68 @@
+
+.calendar-weekdays,
+.calendar-week{
+    display: flex;
+
+}
+
+.calendar-weekdays{
+
+    justify-content: space-between;
+    width: 100%;
+    margin-left: 10px;
+}
+.calendar-month-year,
+.calendar-week-day{
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+.calendar-day,.calendar-month-year{
+    text-align: center;
+}
+.calendar-date-btn{
+    min-width: 30px!important;
+    font-size: 1rem!important;
+    padding: 5px 0px!important;
+    line-height: 1.4!important;
+}
+.calendar-weekday-name{
+    padding-bottom: 10px;
+}
+.step-calendar-select{
+    padding-left: 0px!important;
+    width: 100%;
+}
+.calendar-btn-left{
+    padding: 0px!important;
+}
+
+.booking-form-stepper-container{
+    padding-right: 20px!important;
+    overflow: hidden;
+}
+.calendar-btn-right{
+    padding: 0px 5px!important;
+}
+.calendar-month-year{
+    text-transform: capitalize;
+    font-size: 1.15rem;
+
+    margin: 10px 0;
+}
+.calendar-accordion-item{
+    margin: 15px 0;
+}
+.calendar-available-times{
+    margin: 15px 0;
+}
+
+.calendar-accordion-label-availability{
+    display: block;
+    padding: 0 10px;
+    color: gray;
+    font-style: italic;
+}
+.calendar-step-action-footer{
+    display: flex;
+    justify-content: flex-end;
+}
