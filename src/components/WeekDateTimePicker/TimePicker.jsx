@@ -4,6 +4,7 @@ import {CALENDAR_SETTINGS} from '../../DATA';
 import {Accordion, AccordionDetails, AccordionSummary, Button} from '@material-ui/core';
 import {ExpandMore} from "@material-ui/icons";
 import moment from 'moment';
+import './TimePicker.css';
 
 const TimePicker = ({selectedDate, expanded, setExpanded, groupedTimeSlots} )=> {
 	const context = useFormikContext();
@@ -25,7 +26,7 @@ const TimePicker = ({selectedDate, expanded, setExpanded, groupedTimeSlots} )=> 
 		return (
 			timeSlots.map(slot => (
 
-					<Button
+					<Button className="timeslot-btn"
 						variant={(slot === time) ? 'contained' : 'text'} color={(slot === time) ? 'primary' : 'default'}
 						value={slot} key={slot} onClick={handleClick(slot)}>
 						{slot}

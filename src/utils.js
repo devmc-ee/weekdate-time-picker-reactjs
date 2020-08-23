@@ -12,7 +12,7 @@ export const getPrices = codes => {
 		return false
 	})
 
-}
+};
 
 export const totalPriceCalc = prices => {
 	let sum = 0;
@@ -30,14 +30,14 @@ export const getTotalPrice = codes => {
 export const updatePrices = (service, skipIndex) => {
 	//console.log('updatePrices',service)
 
-	let totalServicesPrice = 0
-	let selectedServicesPrices = {}
+	let totalServicesPrice = 0;
+	let selectedServicesPrices = {};
 
 	if (service && skipIndex) {
 		for (let key in service) {
 			if (SERVICE_PRICES[service[key]] && key.toString() !== skipIndex.toString()) {
-				totalServicesPrice += SERVICE_PRICES[service[key]].price
-				selectedServicesPrices[key] = SERVICE_PRICES[service[key]].price
+				totalServicesPrice += SERVICE_PRICES[service[key]].price;
+				selectedServicesPrices[key] = SERVICE_PRICES[service[key]].price;
 			} else {
 				selectedServicesPrices[key] = ''
 			}
@@ -67,7 +67,7 @@ export const getTotalDuration = services => {
 	if (services && services.length > 0) {
 		durations = services.map(service => {
 			if (service.serviceOption)
-				return SERVICE_OPTIONS[service.serviceBase][service.serviceOption]
+				return SERVICE_OPTIONS[service.serviceBase][service.serviceOption];
 			return 0;
 		});
 		return durations.reduce((accum, current) => accum + current);
@@ -78,24 +78,23 @@ export const getTotalDuration = services => {
 /**
  * generates time slots array according to the set params
  * @param serviceDuration
- * @param workingTime
- * @param timeStep
+ * @param selectedDate
+ * @param calendarProps
  * @param unavailableSlots []
- * @param isToday bool
  * @returns {[]}
  */
-export const getTimeSlots = (selectedDate,unavailableSlots, serviceDuration, calendarProps) => {
-	const { workingTime, timeStep} = calendarProps;
+export const getTimeSlots = (selectedDate, unavailableSlots, serviceDuration, calendarProps) => {
+	const {workingTime, timeStep} = calendarProps;
 	if (!unavailableSlots)
 		unavailableSlots = [];
 
 	unavailableSlots = extendUnavailableSlots(unavailableSlots, serviceDuration, timeStep);
 
-	let mStart = moment(getStartTime(selectedDate,calendarProps), 'HH:mm');
+	let mStart = moment(getStartTime(selectedDate, calendarProps), 'HH:mm');
 
 	let timeSlots = [];
 	const end = moment(workingTime.end, 'HH:mm');
-	end.subtract(serviceDuration, 'm')
+	end.subtract(serviceDuration, 'm');
 
 	while (mStart.isSameOrBefore(end)) {
 
@@ -168,11 +167,11 @@ export const groupTimeSlots = (timeSlots, groups) => {
  * @param calendarProps CalendarSettings
  * @returns {*}
  */
-export const  getStartTime = ( selectedDate, calendarProps) => {
-	const {workingTime,timeStep,todaysFirstTimeOffset, timeZone}=calendarProps;
-	const mTodayWorkStart = moment(workingTime.start,'HH:mm').tz(timeZone);
-	const mTodayWorkEnd = moment(workingTime.end,'HH:mm').subtract(Math.ceil(todaysFirstTimeOffset/2),'m').tz(timeZone);
-	const mTomorrowWorkStart = moment(workingTime.start,'HH:mm').tz(timeZone).add(1, 'd')
+export const getStartTime = (selectedDate, calendarProps) => {
+	const {workingTime, timeStep, todaysFirstTimeOffset, timeZone} = calendarProps;
+	const mTodayWorkStart = moment(workingTime.start, 'HH:mm').tz(timeZone);
+	const mTodayWorkEnd = moment(workingTime.end, 'HH:mm').subtract(Math.ceil(todaysFirstTimeOffset / 2), 'm').tz(timeZone);
+	const mTomorrowWorkStart = moment(workingTime.start, 'HH:mm').tz(timeZone).add(1, 'd');
 	let currTime;
 	//for testing reasons selectedDate can be a moment obj
 	let mSelectedDate = moment.isMoment(selectedDate)
@@ -180,22 +179,21 @@ export const  getStartTime = ( selectedDate, calendarProps) => {
 		: moment(selectedDate, 'YYYY-MM-DD').tz(timeZone);
 
 	//selected date isToday?
-	if(mSelectedDate.isSame(mTodayWorkStart,'day')){
+	if (mSelectedDate.isSame(mTodayWorkStart, 'day')) {
 		//add current time to moment
-		if(!moment.isMoment(selectedDate)){
+		if (!moment.isMoment(selectedDate)) {
 			mSelectedDate
 				.hour(moment().tz(timeZone).format('H'))
 				.minute(moment().tz(timeZone).format('m'))
 		}
 		//workingTime is before start
-		if(mSelectedDate.isSameOrBefore(mTodayWorkStart)){
+		if (mSelectedDate.isSameOrBefore(mTodayWorkStart)) {
 			return mTodayWorkStart
 				.add(todaysFirstTimeOffset, 'm').format('HH:mm')
 		}
-		if(mSelectedDate.isAfter(mTodayWorkEnd)){
+		if (mSelectedDate.isAfter(mTodayWorkEnd)) {
 			return mTodayWorkEnd.format('HH:mm')
 		}
-
 
 
 		currTime = parseInt(mSelectedDate.format('m'));
@@ -204,23 +202,23 @@ export const  getStartTime = ( selectedDate, calendarProps) => {
 		//make devidable on timeStep
 		const rCurrTime = Math.ceil(currTime / timeStep) * timeStep;
 
-		if(rCurrTime<60){
+		if (rCurrTime < 60) {
 			mSelectedDate
-				.add(todaysFirstTimeOffset, 'm').minute(rCurrTime)
+				.add(todaysFirstTimeOffset, 'm').minute(rCurrTime);
 
 			return mSelectedDate.format('HH:mm')
 		}
 
 		return mSelectedDate
-			.add(2* todaysFirstTimeOffset, 'm').minute(0).format('HH:mm')
+			.add(2 * todaysFirstTimeOffset, 'm').minute(0).format('HH:mm')
 
 	}
 
 	//tomorrow
-	if(mSelectedDate.isSame(mTomorrowWorkStart,'day') && moment().tz(timeZone).isAfter(mTodayWorkEnd)){
+	if (mSelectedDate.isSame(mTomorrowWorkStart, 'day') && moment().tz(timeZone).isAfter(mTodayWorkEnd)) {
 		return mTomorrowWorkStart
 			.add(todaysFirstTimeOffset, 'm').format('HH:mm')
 	}
 
 	return workingTime.start;
-}
+};

@@ -1,0 +1,11 @@
+.calendar-timeslots-container {
+    display: grid;
+    width: 100%;
+    grid-gap: 5px;
+    grid-template-columns: repeat(auto-fill, 60px);
+    justify-content: space-between;
+}
+
+.timeslot-btn {
+    width: 60px;
+}
