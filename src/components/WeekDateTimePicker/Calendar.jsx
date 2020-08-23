@@ -33,6 +33,7 @@ const Calendar = React.memo(() => {
 		CALENDAR_SETTINGS);
 	const groupedTimeSlots = groupTimeSlots(timeSlots, CALENDAR_SETTINGS.timeSlotGroups);
 
+	expanded && // if expanded  is not false (not set for closing)  then..
 	groupedTimeSlots.map((group, i) => {
 		const expandedPanelNum = parseInt(expanded.substr(5));
 		if (group.length === 0) {
