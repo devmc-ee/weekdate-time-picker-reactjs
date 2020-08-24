@@ -1,6 +1,6 @@
 
 # WeekDateTimePicker
-This is a simple date and time picker. It is part of [Booking Form](https://github.com/devmc-ee/devmcee-booking) app
+This is a simple date and time picker. It is a part of [Booking Form](https://github.com/devmc-ee/devmcee-booking) app
 .  
  
 The component is supposed to be inside of the [formik](https://formik.org/docs/overview) context for using its values 

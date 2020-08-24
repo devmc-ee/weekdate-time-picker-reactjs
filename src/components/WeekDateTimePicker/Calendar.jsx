@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import moment from 'moment';
 import {ChevronLeft, ChevronRight} from '@material-ui/icons';
 import {IconButton, Button} from "@material-ui/core";
@@ -10,79 +10,96 @@ import {useFormikContext} from "formik";
 import {getTimeSlots, getTotalDuration, groupTimeSlots} from "../../utils";
 import './Calendar.css';
 
-const Calendar = React.memo(() => {
-
+const Calendar = () => {
 	const context = useFormikContext();
-	const services = context.values.services || [];
 	const {maxAvailableDays, disabledWeekDays, locale} = CALENDAR_SETTINGS;
-
 	moment.locale(locale);
-	const [calendarDate, setCalendarDate] = useState(moment().date());
+	const mMaxAllowedDate = moment().add(maxAvailableDays, 'd');
+
+	const [firstWeekDate, setFirstWeekDate] = useState(moment().format('YYYY-MM-DD'));
 	const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
 	const [expanded, setExpanded] = useState('panel0');//accordion
-	const disabledDates = useRef(CALENDAR_SETTINGS.disabledDates);
+	const disabledDates = useRef(CALENDAR_SETTINGS.disabledDates || []);
 
-	let calendarDays = [];
+	let [calendarDays, setCalendarDays] = useState([]);
 	let emptyTimeSlotGroups = [];
-	let isDisabledDay, isSelectedDay, isSelectedDisabledDay;
+	const {services} = context.values || [];
 	const servicesTotalLength = getTotalDuration(services);
+
 	const timeSlots = getTimeSlots(
 		selectedDate,
-		[],
+		[],//supposed to be fetched from backend in future
 		servicesTotalLength,
 		CALENDAR_SETTINGS);
 	const groupedTimeSlots = groupTimeSlots(timeSlots, CALENDAR_SETTINGS.timeSlotGroups);
 
-	expanded && // if expanded  is not false (not set for closing)  then..
-	groupedTimeSlots.map((group, i) => {
-		const expandedPanelNum = parseInt(expanded.substr(5));
-		if (group.length === 0) {
-			emptyTimeSlotGroups.push(i);
-		}
-		if (group.length === 0 && expandedPanelNum === i && i <= groupedTimeSlots.length) {
-			//expand next not empty group of timeslots
-			return setExpanded(() => 'panel' + (expandedPanelNum + 1));
-		}
-		return false;
-	});
-
-	if (!disabledDates.current.includes(selectedDate)
-		&& emptyTimeSlotGroups.length === CALENDAR_SETTINGS.timeSlotGroups.length) {
-		disabledDates.current = [...disabledDates.current, selectedDate];
-	}
+	useEffect(() => {
+		expanded && // if panel  is not closed then check the timeslots
+		groupedTimeSlots.map((group, i) => {
+			const expandedPanelNum = parseInt(expanded.substr(5));
+			if (group.length === 0) {
+				emptyTimeSlotGroups.push(i);
+				if (expandedPanelNum === i
+					&& i <= groupedTimeSlots.length) {
+					//expand next not empty group of timeslots
+					return setExpanded(() => 'panel' + (expandedPanelNum + 1));
+				}
+			}
+			return null;
+		});
+	}, [expanded, groupedTimeSlots, emptyTimeSlotGroups]);
 
 	//generate calendar days with properties
-	for (let i = calendarDate; i < calendarDate + 7; i++) {
-		isDisabledDay = (Math.abs(moment().date() - i + 1) >= maxAvailableDays);
-		isDisabledDay = isDisabledDay || disabledWeekDays.includes(moment().date(i).day());
-		isDisabledDay = isDisabledDay || disabledDates.current.includes(moment().date(i).format('YYYY-MM-DD'));
+	useEffect(() => {
+		let calendarDays = [];
+		let isDisabledDay = false;
+		let isSelectedDay = false;
+		let isSelectedDisabledDay = false;
 
-		isSelectedDay = moment(moment().date(i).format('YYYY-MM-DD')).isSame(moment(selectedDate));
-		isDisabledDay = isDisabledDay || emptyTimeSlotGroups.length === groupedTimeSlots.length;
-		if (isSelectedDay) {
-			isSelectedDisabledDay = isDisabledDay = isDisabledDay || timeSlots.length === 0;
+		if (!disabledDates.current.includes(selectedDate)
+			&& emptyTimeSlotGroups.length === CALENDAR_SETTINGS.timeSlotGroups.length) {
+			disabledDates.current = [...disabledDates.current, selectedDate];
 		}
-		if (isSelectedDisabledDay) {
-			setSelectedDate(moment(selectedDate).add(1, 'd').format('YYYY-MM-DD'));
-			setExpanded(() => 'panel' + 0);
+		const mCalendarDay = moment(firstWeekDate, 'YYYY-MM-DD');
+
+		for (let i = 0; i < 7; i++) {
+			isDisabledDay = mCalendarDay.isSameOrAfter(moment().add(maxAvailableDays, 'd'))
+				|| disabledWeekDays.includes(mCalendarDay.day())
+				|| disabledDates.current.includes(mCalendarDay.format('YYYY-MM-DD'));
+
+			isSelectedDay = mCalendarDay.isSame(moment(selectedDate, 'YYYY-MM-DD'));
+
+			if (isSelectedDay) {
+				isSelectedDisabledDay = isDisabledDay = isDisabledDay || timeSlots.length === 0;
+			}
+			if (isSelectedDisabledDay) {
+				setSelectedDate(moment(selectedDate).add(1, 'd').format('YYYY-MM-DD'));
+				setExpanded(() => 'panel' + 0);
+			}
+			calendarDays.push({
+				weekday: mCalendarDay.format('ddd'),
+				date: mCalendarDay.format('D'),
+				fullDate: mCalendarDay.format('YYYY-MM-DD'),
+				disabled: isDisabledDay,
+				selected: isSelectedDay
+			});
+			mCalendarDay.add(1, "d");
 		}
-		calendarDays.push({
-			weekday: moment().date(i).format('ddd'),
-			date: moment().date(i).format('D'),
-			fullDate: moment().date(i).format('YYYY-MM-DD'),
-			disabled: isDisabledDay,
-			selected: isSelectedDay
-		});
-	}
+		setCalendarDays(calendarDays);
+
+	}, [firstWeekDate,
+		selectedDate,
+		disabledWeekDays,
+		maxAvailableDays,
+		timeSlots.length,
+		emptyTimeSlotGroups.length]);
 
 	const handleRightClick = () => {
-		if (maxAvailableDays > calendarDate)
-			setCalendarDate(prevDate => prevDate + 7);
+		setFirstWeekDate(moment(firstWeekDate).add(7, 'd').format('YYYY-MM-DD'));
 	};
 
 	const handleLeftClick = () => {
-		if (moment().date() < calendarDate)
-			setCalendarDate(prevDate => prevDate - 7);
+		setFirstWeekDate(moment(firstWeekDate).subtract(7, 'd'));
 	};
 
 	const handleSelect = date => () => {
@@ -92,24 +109,27 @@ const Calendar = React.memo(() => {
 				time: ''
 			}
 		};
+
 		setSelectedDate(date);
 		context.setValues({...context.values, ...appointment});
 		setExpanded('panel0');
 	};
-
+	//console.log('render');
 	return (
 		<>
 			<div className="calendar-month-year">
-				{moment().date(calendarDate).format('MMMM, Y')}
+				{moment(firstWeekDate).format('MMMM, Y')}
+
 			</div>
+
 			<div className="calendar-week">
 				<IconButton
-					className="calendar-btn-left" disabled={calendarDate === moment().date()}
+					className="calendar-btn-left"
+					disabled={moment(firstWeekDate, 'YYYY-MM-DD').isSameOrBefore(moment())}
 					onClick={handleLeftClick}><ChevronLeft/></IconButton>
 				<div className="calendar-weekdays">
 
-					{calendarDays.map(
-						(day, i) => (
+					{calendarDays.map((day, i) => (
 							<div key={i} className="calendar-day">
 								<div className="calendar-weekday-name">
 									{day.weekday}
@@ -127,18 +147,20 @@ const Calendar = React.memo(() => {
 				</div>
 
 				<IconButton
-					className="calendar-btn-right" disabled={calendarDate > maxAvailableDays}
+					className="calendar-btn-right"
+					disabled={moment(firstWeekDate, 'YYYY-MM-DD')
+						.add(7, 'd').isSameOrAfter(mMaxAllowedDate)}
 					onClick={handleRightClick}><ChevronRight/></IconButton>
 			</div>
 			<div className="calendar-available-times">
-				{isSelectedDisabledDay
-					? 'There is no available times on this date'
-					: <TimePicker
-						selectedDate={selectedDate} expanded={expanded} setExpanded={setExpanded}
-						groupedTimeSlots={groupedTimeSlots}/>
+				{(timeSlots.length !== 0) &&
+				<TimePicker
+					selectedDate={selectedDate} expanded={expanded} setExpanded={setExpanded}
+					groupedTimeSlots={groupedTimeSlots}/>
 				}
+
 			</div>
 		</>
 	)
-});
+};
 export default Calendar;
