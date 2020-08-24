@@ -156,8 +156,8 @@ const Calendar = () => {
 					className="calendar-btn-right"
 					disabled={moment(firstWeekDate, dateFormat)
 						.add(7, 'd').isSameOrAfter(mMaxAllowedDate)}
-					onClick={handleRightClick}><
-						ChevronRight/>
+					onClick={handleRightClick}>
+						<ChevronRight/>
 				</IconButton>
 			</div>
 			<div className="calendar-available-times">
