@@ -129,9 +129,11 @@ const Calendar = () => {
 				<IconButton
 					className="calendar-btn-left"
 					disabled={moment(firstWeekDate, dateFormat).isSameOrBefore(moment())}
-					onClick={handleLeftClick}><ChevronLeft/></IconButton>
-				<div className="calendar-weekdays">
+					onClick={handleLeftClick}><
+						ChevronLeft/>
+				</IconButton>
 
+				<div className="calendar-weekdays">
 					{calendarDays.map((day, i) => (
 							<div key={i} className="calendar-day">
 								<div className="calendar-weekday-name">
@@ -142,7 +144,8 @@ const Calendar = () => {
 										className="calendar-date-btn" onClick={handleSelect(day.fullDate)}
 										variant={day.selected ? 'contained' : 'text'}
 										color={day.selected ? 'primary' : 'default'}
-										disabled={day.disabled}>{day.date}</Button>
+										disabled={day.disabled}>{day.date}
+									</Button>
 								</div>
 							</div>
 						)
@@ -153,7 +156,9 @@ const Calendar = () => {
 					className="calendar-btn-right"
 					disabled={moment(firstWeekDate, dateFormat)
 						.add(7, 'd').isSameOrAfter(mMaxAllowedDate)}
-					onClick={handleRightClick}><ChevronRight/></IconButton>
+					onClick={handleRightClick}><
+						ChevronRight/>
+				</IconButton>
 			</div>
 			<div className="calendar-available-times">
 				{(timeSlots.length !== 0) &&
