@@ -12,12 +12,12 @@ import './Calendar.css';
 
 const Calendar = () => {
 	const context = useFormikContext();
-	const {maxAvailableDays, disabledWeekDays, locale} = CALENDAR_SETTINGS;
+	const {maxAvailableDays, disabledWeekDays, locale, dateFormat} = CALENDAR_SETTINGS;
 	moment.locale(locale);
 	const mMaxAllowedDate = moment().add(maxAvailableDays, 'd');
 
-	const [firstWeekDate, setFirstWeekDate] = useState(moment().format('YYYY-MM-DD'));
-	const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
+	const [firstWeekDate, setFirstWeekDate] = useState(moment().format(dateFormat));
+	const [selectedDate, setSelectedDate] = useState(moment().format(dateFormat));
 	const [expanded, setExpanded] = useState('panel0');//accordion
 	const disabledDates = useRef(CALENDAR_SETTINGS.disabledDates || []);
 
@@ -60,26 +60,26 @@ const Calendar = () => {
 			&& emptyTimeSlotGroups.length === CALENDAR_SETTINGS.timeSlotGroups.length) {
 			disabledDates.current = [...disabledDates.current, selectedDate];
 		}
-		const mCalendarDay = moment(firstWeekDate, 'YYYY-MM-DD');
+		const mCalendarDay = moment(firstWeekDate, dateFormat);
 
 		for (let i = 0; i < 7; i++) {
 			isDisabledDay = mCalendarDay.isSameOrAfter(moment().add(maxAvailableDays, 'd'))
 				|| disabledWeekDays.includes(mCalendarDay.day())
-				|| disabledDates.current.includes(mCalendarDay.format('YYYY-MM-DD'));
+				|| disabledDates.current.includes(mCalendarDay.format(dateFormat));
 
-			isSelectedDay = mCalendarDay.isSame(moment(selectedDate, 'YYYY-MM-DD'));
+			isSelectedDay = mCalendarDay.isSame(moment(selectedDate, dateFormat));
 
 			if (isSelectedDay) {
 				isSelectedDisabledDay = isDisabledDay = isDisabledDay || timeSlots.length === 0;
 			}
 			if (isSelectedDisabledDay) {
-				setSelectedDate(moment(selectedDate).add(1, 'd').format('YYYY-MM-DD'));
+				setSelectedDate(moment(selectedDate).add(1, 'd').format(dateFormat));
 				setExpanded(() => 'panel' + 0);
 			}
 			calendarDays.push({
 				weekday: mCalendarDay.format('ddd'),
 				date: mCalendarDay.format('D'),
-				fullDate: mCalendarDay.format('YYYY-MM-DD'),
+				fullDate: mCalendarDay.format(dateFormat),
 				disabled: isDisabledDay,
 				selected: isSelectedDay
 			});
@@ -92,10 +92,11 @@ const Calendar = () => {
 		disabledWeekDays,
 		maxAvailableDays,
 		timeSlots.length,
-		emptyTimeSlotGroups.length]);
+		emptyTimeSlotGroups.length,
+		dateFormat]);
 
 	const handleRightClick = () => {
-		setFirstWeekDate(moment(firstWeekDate).add(7, 'd').format('YYYY-MM-DD'));
+		setFirstWeekDate(moment(firstWeekDate).add(7, 'd').format(dateFormat));
 	};
 
 	const handleLeftClick = () => {
@@ -125,7 +126,7 @@ const Calendar = () => {
 			<div className="calendar-week">
 				<IconButton
 					className="calendar-btn-left"
-					disabled={moment(firstWeekDate, 'YYYY-MM-DD').isSameOrBefore(moment())}
+					disabled={moment(firstWeekDate, dateFormat).isSameOrBefore(moment())}
 					onClick={handleLeftClick}><ChevronLeft/></IconButton>
 				<div className="calendar-weekdays">
 
@@ -148,7 +149,7 @@ const Calendar = () => {
 
 				<IconButton
 					className="calendar-btn-right"
-					disabled={moment(firstWeekDate, 'YYYY-MM-DD')
+					disabled={moment(firstWeekDate, dateFormat)
 						.add(7, 'd').isSameOrAfter(mMaxAllowedDate)}
 					onClick={handleRightClick}><ChevronRight/></IconButton>
 			</div>
