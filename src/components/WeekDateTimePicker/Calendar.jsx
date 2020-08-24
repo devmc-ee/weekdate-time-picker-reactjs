@@ -129,8 +129,8 @@ const Calendar = () => {
 				<IconButton
 					className="calendar-btn-left"
 					disabled={moment(firstWeekDate, dateFormat).isSameOrBefore(moment())}
-					onClick={handleLeftClick}><
-						ChevronLeft/>
+					onClick={handleLeftClick}>
+					<ChevronLeft/>
 				</IconButton>
 
 				<div className="calendar-weekdays">
