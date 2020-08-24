@@ -96,11 +96,13 @@ const Calendar = () => {
 		dateFormat]);
 
 	const handleRightClick = () => {
-		setFirstWeekDate(moment(firstWeekDate).add(7, 'd').format(dateFormat));
+		setFirstWeekDate(moment(firstWeekDate)
+			.add(7, 'd').format(dateFormat));
 	};
 
 	const handleLeftClick = () => {
-		setFirstWeekDate(moment(firstWeekDate).subtract(7, 'd'));
+		setFirstWeekDate(moment(firstWeekDate)
+			.subtract(7, 'd').format(dateFormat));
 	};
 
 	const handleSelect = date => () => {
