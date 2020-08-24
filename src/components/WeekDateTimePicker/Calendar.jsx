@@ -119,7 +119,7 @@ const Calendar = () => {
 	return (
 		<>
 			<div className="calendar-month-year">
-				{moment(firstWeekDate).format('MMMM, Y')}
+				{moment(selectedDate).format('MMMM, Y')}
 
 			</div>
 
