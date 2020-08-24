@@ -36,7 +36,8 @@ Available settings:
 		}],
 	locale: 'en',           // translation
 	timeZone: 'Europe/Tallinn',
-    disabledDates: ['2020-08-29']
+    disabledDates: ['2020-08-29'],
+    dateFormat: 'YYYY-MM-DD'
 
 };
 ```
